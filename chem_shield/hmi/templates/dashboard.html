@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CHEM-SHIELD | Machine Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('auth_stylesheet') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar dashboard-topbar">
+      <div class="brand">
+        <span class="brand-mark">CS</span>
+        <div>
+          <p class="eyebrow">CHEM-SHIELD / ISOLATED VIRTUAL OT LAB</p>
+          <h1>Machine security dashboard</h1>
+          <p class="brand-subtitle">Read-only view of the existing HMI telemetry store</p>
+        </div>
+      </div>
+      <div class="dashboard-header-actions">
+        <span class="refresh-status" id="refresh-status" role="status">LOADING MACHINE DATA</span>
+        <a class="dashboard-nav-link" href="{{ url_for('index') }}">OPERATOR HMI <span aria-hidden="true">→</span></a>
+        <div class="auth-actions">
+          {% if session.get("role") == "admin" %}
+          <a class="dashboard-nav-link" href="{{ url_for('admin_users') }}">ACCESS CONTROL</a>
+          {% endif %}
+          <form class="logout-form" action="{{ url_for('logout') }}" method="post">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <button class="logout-button" type="submit">SIGN OUT</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <main class="security-dashboard">
+      <section class="status-grid" aria-label="Detector and machine integration status">
+        <article class="status-card machine-status">
+          <p class="eyebrow">VIRTUAL PLC / PLC-01</p>
+          <strong id="plc-status">CHECKING</strong>
+          <span id="machine-state">Process state unavailable</span>
+        </article>
+        <article class="status-card">
+          <p class="eyebrow">ML DETECTOR</p>
+          <strong class="status-unavailable">NOT CONNECTED</strong>
+          <span>There is no ML detector in this machine repository.</span>
+        </article>
+        <article class="status-card">
+          <p class="eyebrow">NETWORK MONITOR</p>
+          <strong class="status-unavailable">NOT CONNECTED</strong>
+          <span>No network event source is configured.</span>
+        </article>
+        <article class="status-card">
+          <p class="eyebrow">CORRELATION / RISK</p>
+          <strong class="status-pending">NOT WIRED</strong>
+          <span>Part 4 engines are separate demos; no runtime scores are available.</span>
+        </article>
+      </section>
+
+      <section class="section-heading">
+        <div>
+          <p class="eyebrow">PROCESS TELEMETRY / M-01</p>
+          <h2>Latest machine readings</h2>
+        </div>
+        <span class="data-source" id="telemetry-time">WAITING FOR TELEMETRY</span>
+      </section>
+      <section class="metric-grid" aria-label="Latest process telemetry">
+        <article class="metric-card"><span>ACTUAL RPM</span><strong id="latest-rpm">--</strong><small>Target <b id="target-rpm">--</b> RPM</small></article>
+        <article class="metric-card"><span>TEMPERATURE</span><strong id="latest-temperature">--</strong><small>Degrees Celsius</small></article>
+        <article class="metric-card"><span>PRESSURE</span><strong id="latest-pressure">--</strong><small>bar</small></article>
+        <article class="metric-card"><span>POWER</span><strong id="latest-power">--</strong><small>kW</small></article>
+      </section>
+
+      <section class="section-heading chart-heading">
+        <div>
+          <p class="eyebrow">STORED HISTORY / LAST 120 RECORDS</p>
+          <h2>Process trends</h2>
+        </div>
+        <span class="data-source" id="record-count">0 RECORDS</span>
+      </section>
+      <section class="chart-grid" aria-label="Telemetry charts">
+        <article class="chart-card"><h3>Actual RPM</h3><div class="chart" id="chart-rpm" role="img" aria-label="Actual RPM trend"></div></article>
+        <article class="chart-card"><h3>Temperature</h3><div class="chart" id="chart-temperature" role="img" aria-label="Temperature trend"></div></article>
+        <article class="chart-card"><h3>Pressure</h3><div class="chart" id="chart-pressure" role="img" aria-label="Pressure trend"></div></article>
+        <article class="chart-card"><h3>Power</h3><div class="chart" id="chart-power" role="img" aria-label="Power trend"></div></article>
+      </section>
+
+      <section class="lower-grid dashboard-lower-grid">
+        <article class="panel telemetry-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">READ-ONLY SQLITE VIEW</p><h3>Recent telemetry</h3></div>
+            <span class="event-count" id="table-count">0 RECORDS</span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>TIME</th><th>STATE</th><th>RPM</th><th>TEMP °C</th><th>PRESSURE</th><th>POWER</th></tr></thead>
+              <tbody id="telemetry-rows"><tr><td colspan="6" class="empty-cell">Waiting for telemetry records.</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="panel events-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">MACHINE EVENT LOG</p><h3>Recent events</h3></div>
+            <span class="event-count" id="event-count">0 EVENTS</span>
+          </div>
+          <div class="dashboard-event-list" id="event-list"><p class="empty-cell">No events recorded.</p></div>
+        </article>
+      </section>
+
+      <aside class="integration-note">
+        <strong>Analysis status:</strong>
+        this page displays the machine's existing telemetry and event records only.
+        It does not create anomaly scores or risk levels. ML, network monitoring,
+        and runtime correlation/risk integration are not present in this repository yet.
+      </aside>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
+</body>
+</html>

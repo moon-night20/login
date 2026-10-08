@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Access control | CHEM-SHIELD</title>
+  <link rel="stylesheet" href="{{ url_for('auth_stylesheet') }}">
+</head>
+<body class="admin-page">
+  <div class="admin-shell">
+    <header class="admin-header">
+      <a class="auth-brand" href="{{ url_for('index') }}">
+        <span class="auth-brand-mark" aria-hidden="true">CS</span>
+        <span>CHEM-SHIELD</span>
+      </a>
+      <nav class="admin-nav" aria-label="Administrator navigation">
+        <a href="{{ url_for('index') }}">OPERATOR CONSOLE</a>
+        <a href="{{ url_for('dashboard') }}">DASHBOARD</a>
+        <form class="logout-form" action="{{ url_for('logout') }}" method="post">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+          <button type="submit">SIGN OUT</button>
+        </form>
+      </nav>
+    </header>
+
+    <main class="admin-main">
+      <p class="auth-eyebrow">ADMINISTRATOR / ACCESS CONTROL</p>
+      <h1>Authorized accounts</h1>
+      <p class="admin-lede">Only accounts listed here can sign in to the virtual machine.</p>
+
+      {% if error %}
+      <p class="admin-alert" role="alert">{{ error }}</p>
+      {% endif %}
+      {% if success %}
+      <p class="admin-success" role="status">{{ success }}</p>
+      {% endif %}
+
+      <div class="admin-grid">
+        <section class="admin-panel" aria-labelledby="add-account-title">
+          <h2 id="add-account-title">Add an operator</h2>
+          <form class="admin-form" action="{{ url_for('add_user') }}" method="post">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <label for="email">Email address</label>
+            <input id="email" name="email" type="email" value="{{ email|default('') }}" autocomplete="email" maxlength="254" required>
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" value="{{ username|default('') }}" autocomplete="off" minlength="3" maxlength="32" pattern="[A-Za-z0-9_.-]+" required>
+            <label for="new-password">Temporary password</label>
+            <input id="new-password" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="256" required>
+            <button type="submit">CREATE AUTHORIZED ACCOUNT</button>
+          </form>
+          <p class="admin-note">Passwords must be at least 12 characters. Share new credentials securely with the operator.</p>
+        </section>
+
+        <section class="admin-panel" aria-labelledby="account-list-title">
+          <div class="panel-heading">
+            <h2 id="account-list-title">Current operators</h2>
+            <span class="account-count">{{ users|length }} ACCOUNT{{ '' if users|length == 1 else 'S' }}</span>
+          </div>
+          <div class="account-list">
+            {% for user in users %}
+            <article class="account-row">
+              <div class="account-details">
+                <strong>{{ user["username"] }}</strong>
+                <span>{{ user["email"] }}</span>
+              </div>
+              <form class="logout-form" action="{{ url_for('delete_user', user_id=user['id']) }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <button class="account-remove" type="submit">REMOVE</button>
+              </form>
+            </article>
+            {% else %}
+            <p class="account-empty">No operator accounts have been created.</p>
+            {% endfor %}
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

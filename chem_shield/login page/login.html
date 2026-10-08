@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css">
+  </head>
+  <body>
+    <main class="login-card" aria-labelledby="login-title">
+      <h1 id="login-title">Login</h1>
+
+      <form action="#" method="post">
+        <label class="input-field">
+          <span class="visually-hidden">Email address</span>
+          <svg class="field-icon" viewBox="0 0 32 26" aria-hidden="true">
+            <rect x="1" y="1" width="30" height="24" rx="1"></rect>
+            <path d="m2 2 14 12L30 2M2 24l10-10m18 10L20 14"></path>
+          </svg>
+          <input type="email" name="email" placeholder="Email Address" autocomplete="email" required>
+        </label>
+
+        <label class="input-field">
+          <span class="visually-hidden">Password</span>
+          <svg class="field-icon key-icon" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="21" cy="10" r="8"></circle>
+            <circle cx="21" cy="10" r="4"></circle>
+            <path d="m15.3 15.7-13 13 3 3 3-3v-3h3v-3h3l5-5"></path>
+          </svg>
+          <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
+        </label>
+
+        <div class="form-actions">
+          <a class="forgot-link" href="#forgot-password">Forget</a>
+          <button type="submit">Sign in</button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>
